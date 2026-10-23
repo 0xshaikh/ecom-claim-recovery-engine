@@ -38,11 +38,30 @@ jobs:
       - name: Smoke test — import core modules
         run: |
           python -c "from core.recon_engine import run_reconciliation; print('recon_engine OK')"
-          python -c "from core.rate_card import RateCard; print('rate_card OK')"
+          python -c "from core.rate_card import compute_shipping_fee, compute_weight_overcharge; print('rate_card OK')"
           python -c "from core.exporter import export_report; print('exporter OK')"
           python -c "from core.claim_ai import generate_claim_note, ClaimContext, Marketplace, ClaimType; print('claim_ai OK')"
           python -c "from core.video_engine import VideoEngine; print('video_engine OK')"
-          python -c "from generate_sample_data import generate_all; print('generate_sample_data OK')"
+          python -c "import generate_sample_data; print('generate_sample_data OK')"
+
+      - name: End-to-end recon test
+        run: |
+          python -c "
+          from core.recon_engine import run_reconciliation
+          from core.exporter import export_report
+          from pathlib import Path
+          r = run_reconciliation('sample_data/orders_sample.csv', 'sample_data/settlement_sample.csv', 'sample_data/sku_master_sample.csv')
+          s = r['summary']
+          assert s['total_orders'] == 200, f\"expected 200 orders, got {s['total_orders']}\"
+          assert s['weight_fraud_count'] == 35, f\"weight fraud: {s['weight_fraud_count']}\"
+          assert s['lost_rto_count'] == 25, f\"lost RTO: {s['lost_rto_count']}\"
+          assert s['unpaid_damaged_count'] == 15, f\"unpaid damaged: {s['unpaid_damaged_count']}\"
+          assert s['clean_count'] == 125, f\"clean: {s['clean_count']}\"
+          print(f\"Recon OK: {s['total_recoverable']} recoverable from {s['total_orders']} orders\")
+          p = export_report(r, str(Path('output/ci_test_report.xlsx')))
+          assert Path(p).exists() and Path(p).stat().st_size > 1000
+          print(f\"Export OK: {p} ({Path(p).stat().st_size} bytes)\")
+          "
 
       - name: Smoke test — claim template fallback
         run: |
