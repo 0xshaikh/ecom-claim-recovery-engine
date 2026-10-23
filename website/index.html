@@ -4,60 +4,149 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>E-Commerce Claim Recovery Engine — Recover Lost Claims for Indian Sellers</title>
-<meta name="description" content="Open-source tool to recover hidden courier weight fraud, lost RTOs, and unpaid damaged returns for Flipkart, Meesho, and Amazon sellers.">
+<meta name="description" content="Open-source Streamlit tool to recover hidden courier weight fraud, 45-day+ lost RTOs, and unpaid damaged returns for Flipkart, Meesho, and Amazon sellers. ₹64,378 recoverable from 200 orders.">
 <style>
   :root{
-    --bg:#0d1117;--bg2:#161b22;--card:#1c2331;--fg:#e6edf3;--muted:#9aa4b2;
-    --accent:#FF6B35;--accent2:#ff8a5b;--border:#2a323d;--green:#3fb950;
+    --bg:#0a0d14;--bg2:#12161f;--card:#171c28;--card2:#1d2331;
+    --fg:#eef2f7;--muted:#8b95a6;--muted2:#5e6879;
+    --accent:#FF6B35;--accent2:#ffa374;--accent-glow:rgba(255,107,53,.15);
+    --border:#252d3d;--border2:#333d52;
+    --green:#3fb950;--yellow:#f0c040;--red:#ef4444;
+    --blue:#58a6ff;--mono:'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
-  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
-  header{position:sticky;top:0;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);z-index:10}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .wrap-wide{max-width:1280px;margin:0 auto;padding:0 28px}
+
+  /* Nav */
+  header{position:sticky;top:0;background:rgba(10,13,20,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
   nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
-  .logo{font-weight:700;font-size:18px}.logo span{color:var(--accent)}
-  nav ul{display:flex;gap:24px;list-style:none}
-  nav a{color:var(--muted);text-decoration:none;font-size:14px}
-  nav a:hover{color:var(--fg)}
-  .btn{display:inline-block;background:var(--accent);color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:transform .15s,background .15s}
-  .btn:hover{background:var(--accent2);transform:translateY(-1px)}
-  .btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent)}
-  .btn-outline:hover{background:var(--accent);color:#fff}
-  .hero{text-align:center;padding:80px 0 60px}
-  .hero h1{font-size:44px;line-height:1.15;margin-bottom:20px;letter-spacing:-.02em}
-  .hero h1 em{font-style:normal;color:var(--accent)}
-  .hero p{font-size:18px;color:var(--muted);max-width:640px;margin:0 auto 32px}
-  .hero .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-  .badge{display:inline-block;background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:20px;font-size:13px;margin-bottom:20px}
-  section{padding:60px 0;border-top:1px solid var(--border)}
-  section h2{text-align:center;font-size:30px;margin-bottom:10px}
-  .sub{text-align:center;color:var(--muted);max-width:620px;margin:0 auto 40px}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;letter-spacing:-.01em}
+  .logo .coin{width:28px;height:28px;background:var(--accent);color:#fff;border-radius:7px;display:grid;place-items:center;font-size:14px;font-weight:800;box-shadow:0 4px 14px var(--accent-glow)}
+  .logo span{color:var(--accent)}
+  nav ul{display:flex;gap:28px;list-style:none;align-items:center}
+  nav ul a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .15s}
+  nav ul a:hover{color:var(--fg)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:11px 20px;border-radius:9px;text-decoration:none;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .18s ease}
+  .btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 22px rgba(255,107,53,.28)}
+  .btn-outline{background:transparent;border:1px solid var(--border2);color:var(--fg)}
+  .btn-outline:hover{border-color:var(--accent);color:var(--accent);background:transparent;box-shadow:none;transform:translateY(-1px)}
+
+  /* Hero */
+  .hero{padding:70px 0 40px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:20%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(255,107,53,.08) 0%,transparent 60%);pointer-events:none}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:20px;font-size:13px;margin-bottom:24px}
+  .badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green)}
+  .hero h1{font-size:52px;line-height:1.1;margin-bottom:22px;letter-spacing:-.025em;font-weight:800}
+  .hero h1 em{font-style:normal;color:var(--accent);position:relative}
+  .hero h1 em::after{content:'';position:absolute;left:0;right:0;bottom:2px;height:6px;background:rgba(255,107,53,.18);border-radius:3px;z-index:-1}
+  .hero p.lead{font-size:19px;color:var(--muted);max-width:720px;margin:0 auto 34px;line-height:1.55}
+  .hero .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:36px}
+  .hero .cta .btn{padding:14px 26px;font-size:15px}
+  .markets{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;margin:32px 0 8px;color:var(--muted2);font-size:12px;letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+  .markets span{opacity:.75}
+
+  /* Screenshot */
+  .screenshot{margin:40px auto 0;max-width:960px;border:1px solid var(--border2);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.03);background:#0d1117;position:relative}
+  .screenshot::before{content:'';position:absolute;top:0;left:0;right:0;height:36px;background:linear-gradient(180deg,#1a1f2b,#141822);z-index:1;display:flex;align-items:center;padding-left:14px}
+  .screenshot-bar{height:36px;background:#1a1f2b;display:flex;align-items:center;padding:0 14px;gap:8px;border-bottom:1px solid #0d1117}
+  .screenshot-bar .dot{width:11px;height:11px;border-radius:50%}
+  .screenshot-bar .r{background:#ff5f56}
+  .screenshot-bar .y{background:#ffbd2e}
+  .screenshot-bar .g{background:#27c93f}
+  .screenshot-bar .title{margin-left:14px;color:var(--muted);font-size:12px;font-family:var(--mono)}
+  .screenshot img{display:block;width:100%;height:auto}
+
+  /* KPIs */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:44px 0 0}
+  .kpi{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:12px;padding:20px 18px;text-align:center;position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.6}
+  .kpi strong{display:block;font-size:26px;color:var(--accent);font-weight:800;letter-spacing:-.01em;font-family:var(--mono);margin-bottom:4px}
+  .kpi span{font-size:12px;color:var(--muted);line-height:1.3}
+
+  /* Sections */
+  section{padding:80px 0;border-top:1px solid var(--border)}
+  section h2{text-align:center;font-size:36px;margin-bottom:12px;letter-spacing:-.02em;font-weight:700}
+  .sub{text-align:center;color:var(--muted);max-width:660px;margin:0 auto 48px;font-size:16px}
+
+  /* Engine cards */
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px}
-  .card .icon{font-size:32px;margin-bottom:14px}
-  .card h3{font-size:18px;margin-bottom:10px}
-  .card p{color:var(--muted);font-size:14px}
-  .steps{counter-reset:step;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .step{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px;position:relative}
-  .step::before{counter-increment:step;content:counter(step);display:inline-block;width:36px;height:36px;background:var(--accent);color:#fff;border-radius:50%;text-align:center;line-height:36px;font-weight:700;margin-bottom:14px}
-  .step h3{font-size:17px;margin-bottom:8px}
-  .step p{color:var(--muted);font-size:14px}
-  pre{background:#000;border:1px solid var(--border);border-radius:10px;padding:22px;overflow-x:auto;font-size:14px;margin:24px 0}
-  code{color:var(--accent2);font-family:'SF Mono',Menlo,Consolas,monospace}
-  footer{text-align:center;padding:40px 0;border-top:1px solid var(--border);color:var(--muted);font-size:14px}
-  footer a{color:var(--accent);text-decoration:none}
-  .kpi{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;margin:36px 0}
-  .kpi div{text-align:center}
-  .kpi strong{display:block;font-size:28px;color:var(--accent)}
-  .kpi span{font-size:13px;color:var(--muted)}
-  @media(max-width:820px){
-    .grid3,.steps{grid-template-columns:1fr}
+  .engine{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:all .2s ease;position:relative;overflow:hidden}
+  .engine:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+  .engine .num{position:absolute;top:20px;right:22px;font-size:12px;color:var(--muted2);font-family:var(--mono);font-weight:600}
+  .engine .icon{width:44px;height:44px;background:var(--accent-glow);border:1px solid rgba(255,107,53,.3);border-radius:10px;display:grid;place-items:center;font-size:22px;margin-bottom:16px}
+  .engine h3{font-size:18px;margin-bottom:10px;font-weight:600}
+  .engine p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:14px}
+  .engine .amount{font-family:var(--mono);font-size:13px;color:var(--green);font-weight:600;padding:6px 10px;background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.15);border-radius:6px;display:inline-block}
+
+  /* How it works */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative}
+  .step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative}
+  .step::before{counter-increment:step;content:counter(step);display:grid;place-items:center;width:36px;height:36px;background:var(--accent);color:#fff;border-radius:9px;font-weight:700;font-size:16px;margin-bottom:16px;font-family:var(--mono);box-shadow:0 4px 14px var(--accent-glow)}
+  .steps{counter-reset:step}
+  .step h3{font-size:17px;margin-bottom:8px;font-weight:600}
+  .step p{color:var(--muted);font-size:14px;line-height:1.6}
+
+  /* Code block */
+  .code-block{background:#000;border:1px solid var(--border2);border-radius:12px;padding:0;margin:20px auto;max-width:720px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+  .code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#0a0d14;border-bottom:1px solid var(--border)}
+  .code-header .dots{display:flex;gap:6px}
+  .code-header .dots span{width:10px;height:10px;border-radius:50%;background:var(--border2)}
+  .code-header .path{font-family:var(--mono);font-size:12px;color:var(--muted2)}
+  .code-header .copy{color:var(--muted);font-size:12px;cursor:pointer;padding:4px 10px;border:1px solid var(--border2);border-radius:5px;transition:all .15s}
+  .code-header .copy:hover{color:var(--accent);border-color:var(--accent)}
+  .code-block pre{padding:20px 22px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.7;color:#c9d1d9}
+  .code-block pre .c{color:#6e7681}
+  .code-block pre .k{color:var(--blue)}
+  .code-block pre .s{color:var(--accent2)}
+
+  /* Trust */
+  .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:20px}
+  .trust-item{padding:24px 20px;border:1px solid var(--border);border-radius:12px;background:var(--card);text-align:center}
+  .trust-item .t-icon{font-size:24px;margin-bottom:10px}
+  .trust-item h4{font-size:14px;margin-bottom:4px;font-weight:600}
+  .trust-item p{color:var(--muted);font-size:12px;line-height:1.5}
+
+  /* FAQ */
+  .faq{max-width:780px;margin:0 auto}
+  details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;padding:18px 22px;transition:border-color .15s}
+  details[open]{border-color:var(--border2)}
+  summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--fg)}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+';color:var(--accent);font-size:20px;font-weight:400;transition:transform .2s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details[open] summary{margin-bottom:12px}
+  details p{color:var(--muted);font-size:14px;line-height:1.65}
+
+  /* CTA bottom */
+  .cta-block{text-align:center;padding:60px 40px;background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border2);border-radius:16px;margin:20px 0}
+  .cta-block h3{font-size:26px;margin-bottom:12px;letter-spacing:-.01em;font-weight:700}
+  .cta-block p{color:var(--muted);margin-bottom:24px;font-size:15px}
+
+  footer{text-align:center;padding:50px 0 40px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+  footer .fl{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+  footer .fl .fl-links{display:flex;gap:24px}
+  footer .fl-links a{color:var(--muted);text-decoration:none;transition:color .15s}
+  footer .fl-links a:hover{color:var(--accent)}
+
+  @media(max-width:900px){
+    .grid3,.steps,.trust,.kpis{grid-template-columns:1fr 1fr}
     nav ul{display:none}
-    .hero h1{font-size:32px}
-    .hero{padding:50px 0 40px}
-    section{padding:40px 0}
-    section h2{font-size:24px}
+    .hero h1{font-size:34px}
+    .hero p.lead{font-size:16px}
+    section{padding:56px 0}
+    section h2{font-size:26px}
+    .wrap{padding:0 20px}
+  }
+  @media(max-width:600px){
+    .grid3,.steps,.trust,.kpis{grid-template-columns:1fr}
+    .hero{padding:44px 0 24px}
+    .hero h1{font-size:28px}
+    .hero .cta{flex-direction:column}
+    .cta-block{padding:36px 22px}
+    footer .fl{flex-direction:column;gap:14px}
   }
 </style>
 </head>
@@ -65,92 +154,206 @@
 <header>
   <div class="wrap">
     <nav>
-      <div class="logo">💰 Claim<span>Recovery</span></div>
+      <a href="#" class="logo"><span class="coin">₹</span>Claim<span>Recovery</span></a>
       <ul>
-        <li><a href="#features">Features</a></li>
+        <li><a href="#engines">Engines</a></li>
         <li><a href="#how">How it works</a></li>
         <li><a href="#install">Install</a></li>
-        <li><a href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">GitHub</a></li>
+        <li><a href="#faq">FAQ</a></li>
       </ul>
+      <a class="btn" href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">View on GitHub →</a>
     </nav>
   </div>
 </header>
 
+<main>
 <div class="wrap">
+
+  <!-- Hero -->
   <section class="hero">
-    <span class="badge">Open Source · MIT · Made for Indian Sellers</span>
-    <h1>Recover <em>₹34,800+</em> From Your Lost E-Commerce Claims</h1>
-    <p>Automatic reconciliation finds hidden courier weight fraud, 45-day-plus lost returns, and unpaid damaged returns on Flipkart, Meesho, and Amazon. Export an audit-ready Excel report in one click.</p>
+    <span class="badge"><span class="dot"></span>Open Source · MIT · Local-only · Made for India</span>
+    <h1>Recover <em>₹64,378</em> from 200<br>orders in under 10 seconds</h1>
+    <p class="lead">Automatic reconciliation finds hidden courier weight fraud, 45-day+ lost RTOs, and unpaid damaged returns on Flipkart, Meesho, and Amazon — with an audit-ready Excel report in one click.</p>
     <div class="cta">
-      <a class="btn" href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">View on GitHub →</a>
+      <a class="btn" href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">Get the code →</a>
       <a class="btn btn-outline" href="#install">Quick Install</a>
     </div>
-    <div class="kpi">
-      <div><strong>₹34,800+</strong><span>Typical 90-day recovery</span></div>
-      <div><strong>35</strong><span>Weight fraud parcels / sample</span></div>
-      <div><strong>25</strong><span>Lost RTO parcels / sample</span></div>
-      <div><strong>15</strong><span>Unpaid damaged / sample</span></div>
+    <div class="markets">
+      <span>Flipkart</span> · <span>Meesho</span> · <span>Amazon.in</span> · <span>Shiprocket</span>
+    </div>
+
+    <!-- Live screenshot -->
+    <div class="screenshot">
+      <div class="screenshot-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="title">ClaimRecovery · localhost:8501</span>
+      </div>
+      <img src="https://raw.githubusercontent.com/0xshaikh/ecom-claim-recovery-engine/main/images/dashboard-overview.png" alt="E-Commerce Claim Recovery Engine dashboard showing ₹64,378 recoverable from 200 orders across weight fraud, lost RTO, and unpaid damaged returns.">
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi"><strong>₹64,378</strong><span>Recoverable from 200 orders</span></div>
+      <div class="kpi"><strong>₹34,800+</strong><span>Typical 90-day recovery</span></div>
+      <div class="kpi"><strong>75</strong><span>Leak orders in sample</span></div>
+      <div class="kpi"><strong>10s</strong><span>Full recon runtime</span></div>
     </div>
   </section>
 
-  <section id="features">
-    <h2>Three Leakage Engines</h2>
-    <p class="sub">Every marketplace seller bleeds money in three predictable ways. Each engine targets one leak with an audit trail.</p>
+  <!-- Engines -->
+  <section id="engines">
+    <h2>Three leakage engines</h2>
+    <p class="sub">Every marketplace seller bleeds money in three predictable ways. Each engine targets one leak with an audit trail you can submit to your marketplace portal.</p>
     <div class="grid3">
-      <div class="card">
+      <div class="engine">
+        <span class="num">01</span>
         <div class="icon">⚖️</div>
         <h3>Courier Weight Fraud</h3>
-        <p>Couriers over-declare chargeable weight by 5–40% to reach the next billing slab. We recompute dead + volumetric weight per SKU and recover the slab overcharge.</p>
+        <p>Couriers over-declare chargeable weight by 5–40% to hit the next billing slab. We recompute dead + volumetric weight per SKU and recover the slab overcharge.</p>
+        <span class="amount">₹2,856 · 35 parcels / sample</span>
       </div>
-      <div class="card">
+      <div class="engine">
+        <span class="num">02</span>
         <div class="icon">📦</div>
         <h3>Lost RTO Returns</h3>
         <p>Reverse shipments stuck in transit beyond 45 days are recoverable under Flipkart SPF and Meesho claims policy. We flag every unreconciled AWB with its invoice value.</p>
+        <span class="amount">₹27,341 · 25 AWBs / sample</span>
       </div>
-      <div class="card">
+      <div class="engine">
+        <span class="num">03</span>
         <div class="icon">🔧</div>
         <h3>Unpaid Damaged Returns</h3>
-        <p>Damaged RTO parcels that you paid forward shipping on should be settled. Cross-referencing settlement vs. order data surfaces every unpaid damaged return.</p>
+        <p>Damaged RTO parcels you paid forward shipping on should be settled. Cross-referencing settlement vs. order data surfaces every unpaid damaged return.</p>
+        <span class="amount">₹34,181 · 15 items / sample</span>
       </div>
     </div>
   </section>
 
+  <!-- How it works -->
   <section id="how">
     <h2>How it works</h2>
-    <p class="sub">Export your portal data, run locally, get a report. No data ever leaves your machine.</p>
+    <p class="sub">Export your portal data, run locally, get a report. Your data never leaves your machine — no cloud, no telemetry, no API keys required.</p>
     <div class="steps">
       <div class="step">
         <h3>Export Portal Data</h3>
-        <p>Download 90 days of Orders, Settlement, and SKU master CSVs from your Flipkart, Meesho, or Amazon seller hub.</p>
+        <p>Download 90 days of Orders, Settlement, and SKU master CSVs from your Flipkart Seller Hub, Meesho dashboard, or Amazon seller account.</p>
       </div>
       <div class="step">
         <h3>Run Reconciliation</h3>
-        <p>Streamlit dashboard loads your CSVs, runs the three engines, and shows KPIs, charts, and per-AWB claim tables.</p>
+        <p>Streamlit dashboard loads your CSVs, runs the three engines, and shows KPIs, charts, and per-AWB claim tables in a real-time dashboard.</p>
       </div>
       <div class="step">
-        <h3>Download & File Claims</h3>
-        <p>Export an Excel report with every claimable AWB and generate marketplace-specific claim notes via the AI drafter.</p>
+        <h3>Download &amp; File Claims</h3>
+        <p>Export a multi-sheet Excel report with every claimable AWB and generate marketplace-specific claim notes via the built-in AI drafter.</p>
       </div>
     </div>
   </section>
 
+  <!-- Install -->
   <section id="install">
     <h2>Install in 60 seconds</h2>
-    <p class="sub">Python 3.10+. Works offline. All data stays on your machine.</p>
-    <pre><code>git clone https://github.com/0xshaikh/ecom-claim-recovery-engine
-cd ecom-claim-recovery-engine
+    <p class="sub">Python 3.10+. Works offline. All data stays on your machine. Zero cloud dependencies.</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="path">terminal</span>
+        <span class="copy">copy</span>
+      </div>
+<pre><span class="c"># 1. Clone and setup</span>
+git clone https://github.com/0xshaikh/ecom-claim-recovery-engine
+<span class="k">cd</span> ecom-claim-recovery-engine
 python -m venv venv
-source venv/bin/activate
+<span class="k">source</span> venv/bin/activate
+
+<span class="c"># 2. Install dependencies</span>
 pip install -r requirements.txt
+
+<span class="c"># 3. Generate 200 sample orders (with deliberate fraud)</span>
 python generate_sample_data.py
-streamlit run app.py</code></pre>
-    <p style="text-align:center"><a class="btn" href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">Get the code →</a></p>
+
+<span class="c"># 4. Launch dashboard</span>
+streamlit run app.py</pre>
+    </div>
   </section>
+
+  <!-- Trust -->
+  <section>
+    <h2>Built for real sellers</h2>
+    <p class="sub">Not another cloud SaaS with a 20% commission. This is your code, your data, your reports.</p>
+    <div class="trust">
+      <div class="trust-item">
+        <div class="t-icon">🔒</div>
+        <h4>100% Local</h4>
+        <p>No cloud upload. No telemetry. Your orders and settlements never leave your laptop.</p>
+      </div>
+      <div class="trust-item">
+        <div class="t-icon">📊</div>
+        <h4>Audit-Ready</h4>
+        <p>Multi-sheet Excel with summary, per-claim detail, and marketplace-specific note templates.</p>
+      </div>
+      <div class="trust-item">
+        <div class="t-icon">🇮🇳</div>
+        <h4>India-First</h4>
+        <p>Flipkart SPF, Meesho policy, Amazon SAFE-T, Shiprocket/BlueDart slabs — real Indian rules.</p>
+      </div>
+      <div class="trust-item">
+        <div class="t-icon">⚡</div>
+        <h4>Fast</h4>
+        <p>200 orders reconcile in under 10 seconds. Designed for daily use before filing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <h2>FAQ</h2>
+    <div class="faq">
+      <details>
+        <summary>Do I need a Gemini / OpenAI API key?</summary>
+        <p>No. The claim-note generator ships with marketplace-specific templates (Flipkart SPF, Meesho Claims Policy, Amazon SAFE-T) that work fully offline. Adding a Gemini key enables richer drafts, but is optional.</p>
+      </details>
+      <details>
+        <summary>Does my data leave my computer?</summary>
+        <p>No. Streamlit runs locally. The AI drafter only uses your data if you supply an API key and it goes directly to the provider you choose — never to us, never to a middleman.</p>
+      </details>
+      <details>
+        <summary>What marketplace policies are covered?</summary>
+        <p>Flipkart Standard Performance Framework (SPF), Meesho Claims Policy, Amazon SAFE-T, and standard courier slab disputes (Shiprocket, BlueDart, Delhivery, Ecom Express). Templates are included for weight disputes, lost RTOs, and damaged returns.</p>
+      </details>
+      <details>
+        <summary>What's the video cutter for?</summary>
+        <p>Warehouse unpacking videos (1 hour, 50–100 packages) get split into per-AWB clips under 8MB for marketplace uploads. Uses OpenCV + pyzbar for barcode detection. Falls back to mock mode if ffmpeg/pyzbar aren't installed.</p>
+      </details>
+      <details>
+        <summary>Is it free?</summary>
+        <p>Yes — MIT-licensed, open source, forever. There's no "starter plan" or "pro tier." Run it however you want, including commercially.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <section>
+    <div class="cta-block">
+      <h3>Find your ₹64,378 today</h3>
+      <p>Run 200 orders through the sample dataset. See what your real orders look like.</p>
+      <a class="btn" href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">Get the code →</a>
+    </div>
+  </section>
+
 </div>
+</main>
 
 <footer>
   <div class="wrap">
-    MIT License · 2026 · <a href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">github.com/0xshaikh/ecom-claim-recovery-engine</a>
+    <div class="fl">
+      <div class="logo"><span class="coin">₹</span>Claim<span>Recovery</span></div>
+      <div class="fl-links">
+        <a href="https://github.com/0xshaikh/ecom-claim-recovery-engine" target="_blank">GitHub</a>
+        <a href="https://github.com/0xshaikh" target="_blank">@0xshaikh</a>
+        <a href="https://0xshaikh.github.io/ecom-claim-recovery-engine/">Live demo</a>
+      </div>
+    </div>
+    MIT License · 2026 · Built for Indian e-commerce sellers
   </div>
 </footer>
 </body>
