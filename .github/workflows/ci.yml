@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate sample data
+        run: python generate_sample_data.py
+
+      - name: Syntax check core modules
+        run: |
+          python -c "import ast; [ast.parse(open(f).read()) for f in ['app.py', 'core/recon_engine.py', 'core/rate_card.py', 'core/exporter.py', 'core/video_engine.py', 'core/claim_ai.py', 'generate_sample_data.py']]"
+
+      - name: Smoke test — import core modules
+        run: |
+          python -c "from core.recon_engine import run_reconciliation; print('recon_engine OK')"
+          python -c "from core.rate_card import RateCard; print('rate_card OK')"
+          python -c "from core.exporter import export_report; print('exporter OK')"
+          python -c "from core.claim_ai import generate_claim_note, ClaimContext, Marketplace, ClaimType; print('claim_ai OK')"
+          python -c "from core.video_engine import VideoEngine; print('video_engine OK')"
+          python -c "from generate_sample_data import generate_all; print('generate_sample_data OK')"
+
+      - name: Smoke test — claim template fallback
+        run: |
+          python -c "from core.claim_ai import generate_claim_note, ClaimContext, Marketplace, ClaimType; c = ClaimContext(awb_number='FLK001', marketplace=Marketplace.FLIPKART, claim_type=ClaimType.LOST_RTO, product_name='Test', invoice_value=5000, claimed_amount=4250, days_in_transit=48); n = generate_claim_note(c); assert len(n) > 200, 'note too short'; print('template OK', len(n))"
+
+      - name: Smoke test — video engine mock fallback
+        run: |
+          python -c "from core.video_engine import VideoEngine; ve = VideoEngine('nonexistent.mp4'); clips = ve.detect_barcode_ranges(); assert len(clips) > 0; print('mock OK', [c.awb_number for c in clips])"
