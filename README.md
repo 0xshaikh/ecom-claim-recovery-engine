@@ -24,9 +24,17 @@ Weight‑overcharge fraud, 45‑day‑plus lost returns (RTO), and unpaid damage
 
 ![Lost RTO analysis](images/lost-rto.png)
 
+**Damaged Returns tab — customer returned damaged, no settlement:**
+
+![Damaged Returns analysis](images/damaged-returns.png)
+
 **Claim Notes generator — Flipkart SPF / Meesho / Amazon SAFE-T templates:**
 
 ![Claim Notes generator](images/claim-notes.png)
+
+**Video Cutter — warehouse unpacking video barcode detector:**
+
+![Video Cutter](images/video-cutter.png)
 
 ## Installation
 ```

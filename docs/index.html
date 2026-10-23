@@ -102,6 +102,21 @@
   .code-block pre .k{color:var(--blue)}
   .code-block pre .s{color:var(--accent2)}
 
+  /* Screenshot Gallery */
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .gal-item{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s ease}
+  .gal-item:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+  .gal-shot{background:#0a0d14;border-bottom:1px solid var(--border);overflow:hidden}
+  .gal-bar{height:28px;background:#1a1f2b;display:flex;align-items:center;padding:0 10px;gap:6px}
+  .gal-dot{width:9px;height:9px;border-radius:50%}
+  .gal-dot.r{background:#ff5f56}
+  .gal-dot.y{background:#ffbd2e}
+  .gal-dot.g{background:#27c93f}
+  .gal-title{margin-left:10px;color:var(--muted2);font-size:11px;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gal-shot img{display:block;width:100%;height:auto}
+  .gal-item h4{padding:14px 16px 4px;font-size:15px;font-weight:600}
+  .gal-item p{padding:0 16px 16px;color:var(--muted);font-size:13px;line-height:1.5}
+
   /* Trust */
   .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:20px}
   .trust-item{padding:24px 20px;border:1px solid var(--border);border-radius:12px;background:var(--card);text-align:center}
@@ -133,6 +148,7 @@
 
   @media(max-width:900px){
     .grid3,.steps,.trust,.kpis{grid-template-columns:1fr 1fr}
+    .gallery{grid-template-columns:1fr 1fr}
     nav ul{display:none}
     .hero h1{font-size:34px}
     .hero p.lead{font-size:16px}
@@ -141,7 +157,7 @@
     .wrap{padding:0 20px}
   }
   @media(max-width:600px){
-    .grid3,.steps,.trust,.kpis{grid-template-columns:1fr}
+    .grid3,.steps,.trust,.kpis,.gallery{grid-template-columns:1fr}
     .hero{padding:44px 0 24px}
     .hero h1{font-size:28px}
     .hero .cta{flex-direction:column}
@@ -225,6 +241,80 @@
         <h3>Unpaid Damaged Returns</h3>
         <p>Damaged RTO parcels you paid forward shipping on should be settled. Cross-referencing settlement vs. order data surfaces every unpaid damaged return.</p>
         <span class="amount">₹34,181 · 15 items / sample</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshot Gallery -->
+  <section id="gallery">
+    <h2>See it in action</h2>
+    <p class="sub">Six tabs, one clean dashboard. Every claim is traceable back to a specific AWB.</p>
+    <div class="gallery">
+      <div class="gal-item">
+        <div class="gal-shot">
+          <div class="gal-bar">
+            <span class="gal-dot r"></span><span class="gal-dot y"></span><span class="gal-dot g"></span>
+            <span class="gal-title">Overview · ₹64,378</span>
+          </div>
+          <img loading="lazy" src="https://raw.githubusercontent.com/0xshaikh/ecom-claim-recovery-engine/main/images/dashboard-overview.png" alt="Overview dashboard with KPI cards">
+        </div>
+        <h4>🏠 Overview</h4>
+        <p>KPI cards, charts, and top-10 claims at a glance.</p>
+      </div>
+      <div class="gal-item">
+        <div class="gal-shot">
+          <div class="gal-bar">
+            <span class="gal-dot r"></span><span class="gal-dot y"></span><span class="gal-dot g"></span>
+            <span class="gal-title">Weight Fraud · ₹2,856</span>
+          </div>
+          <img loading="lazy" src="https://raw.githubusercontent.com/0xshaikh/ecom-claim-recovery-engine/main/images/weight-fraud.png" alt="Weight fraud analysis tab">
+        </div>
+        <h4>⚖️ Weight Fraud</h4>
+        <p>35 overcharged parcels with slab breakdown.</p>
+      </div>
+      <div class="gal-item">
+        <div class="gal-shot">
+          <div class="gal-bar">
+            <span class="gal-dot r"></span><span class="gal-dot y"></span><span class="gal-dot g"></span>
+            <span class="gal-title">Lost RTO · ₹27,341</span>
+          </div>
+          <img loading="lazy" src="https://raw.githubusercontent.com/0xshaikh/ecom-claim-recovery-engine/main/images/lost-rto.png" alt="Lost RTO analysis tab">
+        </div>
+        <h4>📦 Lost RTO</h4>
+        <p>25 unreconciled AWBs, 45+ days in transit.</p>
+      </div>
+      <div class="gal-item">
+        <div class="gal-shot">
+          <div class="gal-bar">
+            <span class="gal-dot r"></span><span class="gal-dot y"></span><span class="gal-dot g"></span>
+            <span class="gal-title">Damaged · ₹34,181</span>
+          </div>
+          <img loading="lazy" src="https://raw.githubusercontent.com/0xshaikh/ecom-claim-recovery-engine/main/images/damaged-returns.png" alt="Damaged returns analysis tab">
+        </div>
+        <h4>🔧 Damaged Returns</h4>
+        <p>15 unpaid damaged returns ready to claim.</p>
+      </div>
+      <div class="gal-item">
+        <div class="gal-shot">
+          <div class="gal-bar">
+            <span class="gal-dot r"></span><span class="gal-dot y"></span><span class="gal-dot g"></span>
+            <span class="gal-title">Claim Notes · FLK001234</span>
+          </div>
+          <img loading="lazy" src="https://raw.githubusercontent.com/0xshaikh/ecom-claim-recovery-engine/main/images/claim-notes.png" alt="AI claim note generator tab">
+        </div>
+        <h4>✍️ Claim Notes</h4>
+        <p>Flipkart SPF / Meesho / Amazon SAFE-T templates.</p>
+      </div>
+      <div class="gal-item">
+        <div class="gal-shot">
+          <div class="gal-bar">
+            <span class="gal-dot r"></span><span class="gal-dot y"></span><span class="gal-dot g"></span>
+            <span class="gal-title">Video Cutter · ffmpeg</span>
+          </div>
+          <img loading="lazy" src="https://raw.githubusercontent.com/0xshaikh/ecom-claim-recovery-engine/main/images/video-cutter.png" alt="Warehouse video cutter tab">
+        </div>
+        <h4>🎬 Video Cutter</h4>
+        <p>Unpacking video → per-AWB clips under 8MB.</p>
       </div>
     </div>
   </section>
