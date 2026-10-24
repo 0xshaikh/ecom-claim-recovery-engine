@@ -119,7 +119,7 @@ def _write_summary_sheet(wb: Workbook, summary: Dict[str, object]) -> None:
     ws = wb.create_sheet(title="Executive_Summary")
 
     ws.merge_cells("A1:D1")
-    ws["A1"] = "E-Commerce Claim Recovery — Executive Summary"
+    ws["A1"] = "EcoClaim — Executive Summary"
     ws["A1"].font = TITLE_FONT
     ws["A1"].fill = TITLE_FILL
     ws["A1"].alignment = CENTER

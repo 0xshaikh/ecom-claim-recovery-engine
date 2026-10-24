@@ -1,4 +1,4 @@
-"""Streamlit dashboard for the E-Commerce Claim Recovery Engine.
+"""Streamlit dashboard for the EcoClaim.
 
 Imports from `core.recon_engine`, `core.exporter`, and `generate_sample_data`.
 Video Cutter and Claim Notes tabs degrade gracefully if the underlying modules
@@ -11,6 +11,20 @@ import os
 import sys
 from pathlib import Path
 from typing import Optional
+
+# --- Load .env (optional, non-fatal) ----------------------------------------
+# If the user drops a .env file at the repo root, we'll pick up API keys from it.
+# This lets a fresh clone work out of the box: copy .env.example -> .env,
+# fill in keys, run streamlit.
+try:
+    from dotenv import load_dotenv
+    # Load from repo root (where this file lives) and cwd.
+    _REPO_ROOT = Path(__file__).resolve().parent
+    load_dotenv(_REPO_ROOT / ".env", override=False)
+    load_dotenv(override=False)  # also pick up cwd .env
+except Exception:
+    # python-dotenv missing — still works, user can export vars manually.
+    pass
 
 # Ensure the repo root is importable when launched from anywhere.
 sys.path.insert(0, ".")
@@ -70,8 +84,8 @@ except Exception as _exc:  # noqa: BLE001
 # --------------------------------------------------------------------------- #
 
 st.set_page_config(
-    page_title="💰 E-Commerce Claim Recovery Engine",
-    page_icon="💰",
+    page_title="EcoClaim",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -118,7 +132,7 @@ OUTPUT_DIR = Path("output").resolve()
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 with st.sidebar:
-    st.markdown("### 💰 E-Commerce Claim Recovery Engine")
+    st.markdown("### EcoClaim")
     st.caption("India Marketplace Audit Tool · Flipkart · Meesho · Amazon")
     st.divider()
 
@@ -238,7 +252,7 @@ tab_home, tab_weight, tab_lost, tab_damaged, tab_video, tab_claim = st.tabs(
 # --------------------------------------------------------------------------- #
 
 with tab_home:
-    st.markdown("# 💰 E-Commerce Claim Recovery Engine")
+    st.markdown("# EcoClaim")
     st.markdown(
         "Recover hidden courier weight fraud, lost RTOs, and unpaid damaged returns "
         "across Flipkart, Meesho and Amazon marketplaces."

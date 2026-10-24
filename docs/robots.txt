@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://0xshaikh.github.io/ecom-claim-recovery-engine/sitemap.xml

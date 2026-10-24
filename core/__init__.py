@@ -1,1 +1,1 @@
-"""Core package for E-Commerce Claim Recovery Engine."""
+"""Core package for EcoClaim."""

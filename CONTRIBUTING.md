@@ -1,4 +1,4 @@
-# Contributing to E-Commerce Claim Recovery Engine
+# Contributing to EcoClaim
 
 ## Setup
 ```

@@ -1,6 +1,6 @@
 # Usage Guide
 
-Step-by-step walkthrough for getting value from the E-Commerce Claim Recovery Engine.
+Step-by-step walkthrough for getting value from the EcoClaim.
 
 ---
 

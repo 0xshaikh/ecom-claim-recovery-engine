@@ -1,4 +1,4 @@
-# 💰 E-Commerce Claim Recovery Engine
+# EcoClaim
 
 Recover ₹34,800+ in hidden courier weight fraud, lost RTOs, and unpaid damaged returns for Flipkart, Meesho, and Amazon sellers.
 
